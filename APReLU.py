@@ -17,7 +17,7 @@ class APReLU(nn.Module):
 
     def forward(self, x):
         N, C, H, W = x.size()
-        x_min = torch.min(x,torch.zeros_like(x))
+        x_min = x-x.abs()
         x_max = F.relu(x)
         x_min_gap = self.gap_min_branch(x_min)
         x_max_gap = self.gap_max_branch(x_max)
@@ -28,5 +28,5 @@ class APReLU(nn.Module):
         x_excitation = self.fc_excitation(x_squeeze).view(N,C,1,1)
         x_excitation = self.bn_excitation(x_excitation)
         sigma = F.sigmoid(x_excitation)
-        output = F.relu(x)+x_min*sigma.expand_as(x_min)
+        output = F.relu(x)+0.5*sigma.expand_as(x)*(x-x.abs())
         return output

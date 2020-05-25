@@ -20,7 +20,7 @@ class APReLU(nn.Module):
 
     def forward(self, x):
         N, C, H, W = x.size()
-        x_min = x-x.abs()
+        x_min = (x-x.abs())*0.5
         x_max = F.relu(x)
         x_min_gap = self.gap_min_branch(x_min)
         x_max_gap = self.gap_max_branch(x_max)
